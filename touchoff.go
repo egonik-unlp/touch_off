@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -12,6 +13,7 @@ func main() {
 	re := regexp.MustCompile(`\d+\s`)
 	cmd := exec.Command("xinput")
 	out, err := cmd.Output()
+	args := os.Args
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +24,22 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			err := touchOff(id, false)
+			if len(args) > 1 {
+				if args[1] == "enable" {
+					err = touchOff(id, true)
+					fmt.Println("Se reactivo la pantalla táctil")
+				} else if args[1] == "disable" {
+					err = touchOff(id, false)
+					fmt.Println("Se desactivó la pantalla táctil")
+				} else {
+					fmt.Printf("El comando %s no existe", args[1])
+
+				}
+			} else {
+				err = touchOff(id, false)
+				fmt.Println("Se desactivo la pantalla táctil")
+			}
+
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -33,22 +50,19 @@ func main() {
 }
 
 func touchOff(id string, revert bool) error {
+	argArray := []string{id}
 	if !revert {
-		cmd := exec.Command("xinput", "disable", id)
-
-		if err := cmd.Run(); err != nil {
-			return err
-		} else {
-			fmt.Printf("Se desactivó el dispositivo con id = %s exitosamente\n", id)
-		}
+		field := []string{"disable"}
+		argArray = append(field, argArray...)
 	} else {
-		cmd := exec.Command("xinput", "enable", id)
-
-		if err := cmd.Run(); err != nil {
-			return err
-		} else {
-			fmt.Printf("Se reactivó el dispositivo con id = %s exitosamente\n", id)
-		}
+		field := []string{"enable"}
+		argArray = append(field, argArray...)
 	}
+	cmd := exec.Command("xinput", argArray...)
+	err := cmd.Run()
 
+	if err != nil {
+		return err
+	}
+	return nil
 }
