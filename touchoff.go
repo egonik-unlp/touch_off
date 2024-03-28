@@ -22,12 +22,32 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			cmd2 := exec.Command("xinput", "disable", id)
-			if err = cmd2.Run(); err != nil {
+			err := touchOff(id, false)
+			if err != nil {
 				log.Fatal(err)
-			} else {
-				fmt.Printf("Se desactivó el dispositivo con id = %s exitosamente", id)
 			}
+
+		}
+	}
+
+}
+
+func touchOff(id string, revert bool) error {
+	if !revert {
+		cmd := exec.Command("xinput", "disable", id)
+
+		if err := cmd.Run(); err != nil {
+			return err
+		} else {
+			fmt.Printf("Se desactivó el dispositivo con id = %s exitosamente\n", id)
+		}
+	} else {
+		cmd := exec.Command("xinput", "enable", id)
+
+		if err := cmd.Run(); err != nil {
+			return err
+		} else {
+			fmt.Printf("Se reactivó el dispositivo con id = %s exitosamente\n", id)
 		}
 	}
 
