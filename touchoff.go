@@ -32,7 +32,7 @@ func main() {
 					err = touchOff(id, false)
 					fmt.Println("Se desactivó la pantalla táctil")
 				} else {
-					fmt.Printf("El comando %s no existe", args[1])
+					fmt.Printf("El comando %s no existe\n", args[1])
 
 				}
 			} else {
